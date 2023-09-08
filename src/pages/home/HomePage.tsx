@@ -23,9 +23,9 @@ export const HomePage = () => (
       <button onClick={goToExample01a}>Example 1a</button>
       <button onClick={goToExample01b}>Example 1b</button>
       <button onClick={goToExample02a}>Example 2a</button>
+      <button onClick={goToExample02b}>Example 2b</button>
+      <button onClick={goToExample03a}>Example 3a</button>
       <div style={{ display: "none" }}>
-        <button onClick={goToExample02b}>Example 2b</button>
-        <button onClick={goToExample03a}>Example 3a</button>
         <button onClick={goToExample03b}>Example 3b</button>
         <button onClick={goToExample03c}>Example 3c</button>
         <button onClick={goToOptimisticUpdates}>Optimistic Updates</button>
