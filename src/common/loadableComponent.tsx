@@ -1,26 +1,48 @@
-import { state as componentState, useStateObservable } from "@react-rxjs/core";
-import React from "react";
-import { Observable } from "rxjs";
-import { VertexLoadableState, VertexLoadedState } from "verdux";
+import { AnyAction } from "@reduxjs/toolkit";
+import { FC, useContext } from "react";
+import { VertexConfig, VertexInstance, VertexStateKey } from "verdux";
+import { PickedLoadedVertexState } from "verdux/lib/PickedLoadedVertexState";
 import { VertexType } from "verdux/lib/VertexType";
-import { Spinner } from "./Spinner";
+import { GraphContext } from "./GraphContext";
+import { loadableStateComponent } from "./loadableStateComponent";
 
-export function loadableComponent<Type extends VertexType>(
-  loadableState$: Observable<VertexLoadableState<Type>>,
-  Component: React.FC<VertexLoadedState<Type>>
-): React.FC<{}> {
-  const componentState$ = componentState(loadableState$, null);
-  return () => {
-    const loadableState = useStateObservable(componentState$);
-    if (loadableState === null) return null;
-    if (loadableState.status === "loading") return <Spinner />;
-    if (loadableState.status === "error")
-      return (
-        <h3>
-          Errors:{" "}
-          {JSON.stringify(loadableState.errors.map((error) => error.message))}
-        </h3>
+export const loadableComponent =
+  <
+    Type extends VertexType,
+    PickedFields extends VertexStateKey<Type>
+  >(options: {
+    vertexConfig: VertexConfig<Type>;
+    fields: PickedFields[];
+    component: FC<
+      PickedLoadedVertexState<Type, PickedFields> & {
+        dispatch: (action: AnyAction) => void;
+      }
+    >;
+  }): FC<{}> =>
+  () => {
+    const graph = useContext(GraphContext);
+    if (!graph) return null;
+    let vertex: VertexInstance<Type> | undefined;
+    let error: Error | undefined;
+    try {
+      vertex = graph.getVertexInstance(options.vertexConfig);
+    } catch (e: any) {
+      error = e;
+    }
+    if (!vertex) {
+      console.error(
+        "Error connecting component to vertex instance: Vertex config " +
+          options.vertexConfig.name +
+          " was probably not passed to graph constructor",
+        { error }
       );
-    return <Component {...(loadableState.state as any)} />;
+      return null;
+    }
+    const dispatch = (action: AnyAction) => graph.dispatch(action);
+    const loadableState$ = vertex.pick(options.fields);
+    const Component = loadableStateComponent(
+      loadableState$,
+      options.component as any
+    );
+    return <Component dispatch={dispatch} />;
   };
-}

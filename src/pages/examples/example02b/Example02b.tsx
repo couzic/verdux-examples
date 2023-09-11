@@ -1,84 +1,52 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { distinctUntilChanged, filter, map, of } from "rxjs";
-import { configureRootVertex, createGraph } from "verdux";
-import { Route } from "../../common/Route";
-import { loadableComponent } from "../../common/loadableComponent";
-import { router } from "../../router/Router";
+import { Route } from "../../../common/Route";
+import { loadableComponent } from "../../../common/loadableComponent";
+import { router } from "../../../router/createRouter";
 import {
   ExampleDescription,
   descriptionButtonStyle,
-} from "./ExampleDescription";
-import { ExampleLink } from "./ExampleLink";
-import { PokemonDisplay } from "./pokemon/PokemonDisplay";
-import { createPokemonService } from "./pokemon/PokemonService";
+} from "../ExampleDescription";
+import { ExampleLink } from "../ExampleLink";
+import { PokemonDisplay } from "../pokemon/PokemonDisplay";
+import { example02b_VertexConfig } from "./vertexConfig";
 
 const route = router.examples["2"].b;
 
-const rootConfig = configureRootVertex({
-  slice: createSlice({
-    name: "root",
-    initialState: {},
-    reducers: {},
-  }),
-  dependencies: {
-    pokemonService: createPokemonService,
-  },
-})
-  .loadFromStream(
-    route.match$.pipe(
-      filter(Boolean),
-      map(({ params }) => params["pokemon-name"]),
-      distinctUntilChanged()
-    ),
-    ({ pokemonService }) => ({
-      pokemon: (pokemonName) => pokemonService.findByName(pokemonName),
-    })
-  )
-  .loadFromFields(["pokemon"], ({ pokemonService }) => ({
-    evolvesFrom: ({ pokemon }) =>
-      !pokemon ? of(null) : pokemonService.getEvolvesFrom(pokemon.id),
-    evolvesTo: ({ pokemon }) =>
-      !pokemon ? of([]) : pokemonService.getEvolvesTo(pokemon.id),
-  }));
-
-const graph = createGraph({
-  vertices: [rootConfig],
+const EvolvesFrom = loadableComponent({
+  vertexConfig: example02b_VertexConfig,
+  fields: ["evolvesFrom"],
+  component: ({ evolvesFrom }) =>
+    !evolvesFrom ? null : <PokemonDisplay pokemon={evolvesFrom} />,
 });
 
-const rootVertex = graph.getVertexInstance(rootConfig);
-
-const EvolvesFrom = loadableComponent(
-  rootVertex.pick(["evolvesFrom"]),
-  ({ evolvesFrom }) =>
-    !evolvesFrom ? null : <PokemonDisplay pokemon={evolvesFrom} />
-);
-
-const EvolvesTo = loadableComponent(
-  rootVertex.pick(["evolvesTo"]),
-  ({ evolvesTo }) => (
+const EvolvesTo = loadableComponent({
+  vertexConfig: example02b_VertexConfig,
+  fields: ["evolvesTo"],
+  component: ({ evolvesTo }) => (
     <>
       {evolvesTo.map((evo) => (
         <PokemonDisplay pokemon={evo} key={evo.id} />
       ))}
     </>
-  )
-);
+  ),
+});
 
-const PokemonAsap = loadableComponent(
-  rootVertex.pick(["pokemon"]),
-  ({ pokemon }) =>
+const PokemonAsap = loadableComponent({
+  vertexConfig: example02b_VertexConfig,
+  fields: ["pokemon"],
+  component: ({ pokemon }) =>
     !pokemon ? null : (
       <div style={{ display: "flex", justifyContent: "center" }}>
         <EvolvesFrom />
         <PokemonDisplay pokemon={pokemon} />
         <EvolvesTo />
       </div>
-    )
-);
+    ),
+});
 
-const PokemonFullyLoaded = loadableComponent(
-  rootVertex.pick(["pokemon", "evolvesFrom", "evolvesTo"]),
-  ({ evolvesFrom, pokemon, evolvesTo }) => (
+const PokemonFullyLoaded = loadableComponent({
+  vertexConfig: example02b_VertexConfig,
+  fields: ["pokemon", "evolvesFrom", "evolvesTo"],
+  component: ({ evolvesFrom, pokemon, evolvesTo }) => (
     <div style={{ display: "flex", justifyContent: "center" }}>
       {!evolvesFrom ? null : <PokemonDisplay pokemon={evolvesFrom} />}
       {!pokemon ? null : <PokemonDisplay pokemon={pokemon} />}
@@ -86,8 +54,8 @@ const PokemonFullyLoaded = loadableComponent(
         <PokemonDisplay pokemon={evo} key={evo.id} />
       ))}
     </div>
-  )
-);
+  ),
+});
 
 export const Example02b = () => (
   <Route match={route}>

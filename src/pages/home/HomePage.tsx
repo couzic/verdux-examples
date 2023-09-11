@@ -1,5 +1,5 @@
 import { Route } from "../../common/Route";
-import { router } from "../../router/Router";
+import { router } from "../../router/createRouter";
 
 const { examples } = router;
 
@@ -25,9 +25,9 @@ export const HomePage = () => (
       <button onClick={goToExample02a}>Example 2a</button>
       <button onClick={goToExample02b}>Example 2b</button>
       <button onClick={goToExample03a}>Example 3a</button>
+      <button onClick={goToExample03b}>Example 3b</button>
+      <button onClick={goToExample03c}>Example 3c</button>
       <div style={{ display: "none" }}>
-        <button onClick={goToExample03b}>Example 3b</button>
-        <button onClick={goToExample03c}>Example 3c</button>
         <button onClick={goToOptimisticUpdates}>Optimistic Updates</button>
         <button onClick={goToNestedRoutes}>Nested Routes</button>
       </div>

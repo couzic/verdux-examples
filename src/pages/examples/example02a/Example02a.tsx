@@ -1,48 +1,26 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { distinctUntilChanged, filter, map } from "rxjs";
-import { configureRootVertex, createGraph } from "verdux";
-import { Route } from "../../common/Route";
-import { loadableComponent } from "../../common/loadableComponent";
-import { router } from "../../router/Router";
+import { Route } from "../../../common/Route";
+import { loadableComponent } from "../../../common/loadableComponent";
+import { router } from "../../../router/createRouter";
 import {
   ExampleDescription,
   descriptionButtonStyle,
-} from "./ExampleDescription";
-import { ExampleLink } from "./ExampleLink";
-import { PokemonDisplay } from "./pokemon/PokemonDisplay";
-import { createPokemonService } from "./pokemon/PokemonService";
+} from "../ExampleDescription";
+import { ExampleLink } from "../ExampleLink";
+import { PokemonDisplay } from "../pokemon/PokemonDisplay";
+import { example02a_VertexConfig } from "./vertexConfig";
 
 const route = router.examples["2"].a;
 
-const rootConfig = configureRootVertex({
-  slice: createSlice({
-    name: "root",
-    initialState: {},
-    reducers: {},
-  }),
-  dependencies: {
-    pokemonService: createPokemonService,
-  },
-}).loadFromStream(
-  route.match$.pipe(
-    filter(Boolean),
-    map(({ params }) => params["pokemon-name"]),
-    distinctUntilChanged()
-  ),
-  ({ pokemonService }) => ({
-    pokemon: (pokemonName) => pokemonService.findByName(pokemonName),
-  })
-);
-
-const graph = createGraph({
-  vertices: [rootConfig],
+const Pokemon = loadableComponent({
+  vertexConfig: example02a_VertexConfig,
+  fields: ["pokemon"],
+  component: ({ pokemon }) =>
+    !pokemon ? (
+      <h3>Pokemon not found</h3>
+    ) : (
+      <PokemonDisplay pokemon={pokemon} />
+    ),
 });
-
-const rootVertex = graph.getVertexInstance(rootConfig);
-
-const Pokemon = loadableComponent(rootVertex.pick(["pokemon"]), ({ pokemon }) =>
-  !pokemon ? <h3>Pokemon not found</h3> : <PokemonDisplay pokemon={pokemon} />
-);
 
 export const Example02a = () => (
   <Route match={route}>
