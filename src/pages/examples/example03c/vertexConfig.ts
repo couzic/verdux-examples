@@ -37,21 +37,18 @@ export const example03c_VertexConfig = rootVertexConfig
       map((match) => match.params["pokemon-name"] as PokemonName)
     ),
   }))
-  // TODO implement effects (maybe using RTK listener middleware ?)
-  // .sideEffects({
-  //   selectPokemon: (option) => {
-  //     if (option) {
-  //       route.push({ "pokemon-name": option.label });
-  //     }
-  //   },
-  // })
+  .sideEffect(example03c_Actions.selectPokemon, (pokemon, vertex) => {
+    if (pokemon) {
+      vertex.dependencies.router.examples[3].c.push({
+        "pokemon-name": pokemon.label,
+      });
+    }
+  })
   .computeFromFields(["pokemonOptions", "selectedPokemonName"], {
-    // TODO it should be a loadable field, since it is computed based on loadable field values
-    selectedPokemonOption: ({ pokemonOptions, selectedPokemonName }) => {
-      return asSequence(pokemonOptions || []).find(
+    selectedPokemonOption: ({ pokemonOptions, selectedPokemonName }) =>
+      asSequence(pokemonOptions || []).find(
         (_) => _.label === selectedPokemonName
-      );
-    },
+      ),
   })
   .loadFromFields(["selectedPokemonName"], ({ pokemonService }) => ({
     pokemon: ({ selectedPokemonName }) =>

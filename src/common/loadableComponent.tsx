@@ -1,8 +1,13 @@
 import { AnyAction } from "@reduxjs/toolkit";
 import { FC, useContext } from "react";
-import { VertexConfig, VertexInstance, VertexStateKey } from "verdux";
-import { PickedLoadedVertexState } from "verdux/lib/PickedLoadedVertexState";
-import { VertexType } from "verdux/lib/VertexType";
+import {
+  // TODO VertexType,
+  PickedLoadedVertexState,
+  VertexConfig,
+  VertexInstance,
+  VertexStateKey,
+} from "verdux";
+import { VertexType } from "verdux/lib/VertexType"; // TODO Remove this import
 import { GraphContext } from "./GraphContext";
 import { loadableStateComponent } from "./loadableStateComponent";
 

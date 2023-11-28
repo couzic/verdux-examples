@@ -29,27 +29,9 @@ export const createRouter = (history: History) =>
             c: route({ path: "/c/:pokemon-name", params: ["pokemon-name"] }),
           },
         }),
-        optimisticUpdates: route({
-          path: "/optimistic-updates",
-        }),
-        nestedRoutes: route({
-          path: "/nested-routes",
-          nested: {
-            app: route({
-              path: "/app",
-              nested: {
-                services: route({
-                  path: "/services",
-                  nested: {
-                    detail: route({
-                      path: "/:serviceId",
-                      params: ["serviceId"],
-                    }),
-                  },
-                }),
-              },
-            }),
-          },
+        realWorld: route({
+          path: "real-world",
+          nested: {},
         }),
       },
     }),

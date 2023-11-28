@@ -22,9 +22,10 @@
     "react-select": "^5.7.4",
     "rxjs": "^7.8.1",
     "sequency": "^0.20.0",
-    "verdux": "^0.0.7"
+    "verdux": "^0.0.17"
   },
   "devDependencies": {
+    "@types/chrome": "^0.0.246",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
