@@ -1,33 +1,27 @@
-import { AnyAction } from "@reduxjs/toolkit";
+import { UnknownAction } from "@reduxjs/toolkit";
 import { FC, useContext } from "react";
-import {
-  // TODO VertexType,
-  PickedLoadedVertexState,
-  VertexConfig,
-  VertexInstance,
-  VertexStateKey,
-} from "verdux";
-import { VertexType } from "verdux/lib/VertexType"; // TODO Remove this import
+import { VertexConfig, VertexInstance } from "verdux";
+import { VertexFieldsDefinition } from "verdux/lib/config/VertexFieldsDefinition";
 import { GraphContext } from "./GraphContext";
 import { loadableStateComponent } from "./loadableStateComponent";
 
 export const loadableComponent =
   <
-    Type extends VertexType,
-    PickedFields extends VertexStateKey<Type>
+    Fields extends VertexFieldsDefinition,
+    PickedFields extends keyof Fields
   >(options: {
-    vertexConfig: VertexConfig<Type>;
+    vertexConfig: VertexConfig<Fields>;
     fields: PickedFields[];
     component: FC<
-      PickedLoadedVertexState<Type, PickedFields> & {
-        dispatch: (action: AnyAction) => void;
+      { [F in PickedFields]: Fields[F]["value"] } & {
+        dispatch: (action: UnknownAction) => void;
       }
     >;
   }): FC<{}> =>
   () => {
     const graph = useContext(GraphContext);
     if (!graph) return null;
-    let vertex: VertexInstance<Type> | undefined;
+    let vertex: VertexInstance<Fields, any> | undefined;
     let error: Error | undefined;
     try {
       vertex = graph.getVertexInstance(options.vertexConfig);
@@ -43,7 +37,7 @@ export const loadableComponent =
       );
       return null;
     }
-    const dispatch = (action: AnyAction) => graph.dispatch(action);
+    const dispatch = (action: UnknownAction) => graph.dispatch(action);
     const loadableState$ = vertex.pick(options.fields);
     const Component = loadableStateComponent(
       loadableState$,

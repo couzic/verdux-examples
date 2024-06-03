@@ -7,6 +7,7 @@ import { Example02b } from "./example02b/Example02b";
 import { Example03a } from "./example03a/Example03a";
 import { Example03b } from "./example03b/Example03b";
 import { Example03c } from "./example03c/Example03c";
+import { RealLifeExample } from "./real-life/RealLifeExample";
 
 const goHome = () => router.home.push();
 
@@ -20,5 +21,6 @@ export const ExamplesPage = () => (
     <Example03a />
     <Example03b />
     <Example03c />
+    <RealLifeExample />
   </Route>
 );

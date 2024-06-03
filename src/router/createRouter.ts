@@ -1,5 +1,6 @@
 import { History, createBrowserHistory } from "history";
 import { createBrowserRouter, route } from "observable-tree-router";
+import { realLifeRoute } from "../pages/examples/real-life/route";
 
 export const createRouter = (history: History) =>
   createBrowserRouter(history, {
@@ -29,10 +30,7 @@ export const createRouter = (history: History) =>
             c: route({ path: "/c/:pokemon-name", params: ["pokemon-name"] }),
           },
         }),
-        realWorld: route({
-          path: "real-world",
-          nested: {},
-        }),
+        realLife: realLifeRoute,
       },
     }),
   });

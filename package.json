@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@react-rxjs/core": "^0.10.7",
-    "@reduxjs/toolkit": "^1.9.5",
+    "@reduxjs/toolkit": "^2.2.5",
     "history": "^5.3.0",
     "observable-tree-router": "^0.2.1",
     "ramda": "^0.29.0",
@@ -22,7 +22,7 @@
     "react-select": "^5.7.4",
     "rxjs": "^7.8.1",
     "sequency": "^0.20.0",
-    "verdux": "^0.0.17"
+    "verdux": "^0.4.5"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.246",

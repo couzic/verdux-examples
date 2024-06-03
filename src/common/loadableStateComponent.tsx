@@ -1,15 +1,15 @@
 import { state as componentState, useStateObservable } from "@react-rxjs/core";
-import { AnyAction } from "@reduxjs/toolkit";
+import { UnknownAction } from "@reduxjs/toolkit";
 import React from "react";
 import { Observable } from "rxjs";
 import { VertexLoadableState, VertexLoadedState } from "verdux";
-import { VertexType } from "verdux/lib/VertexType";
+import { VertexFieldsDefinition } from "verdux/lib/config/VertexFieldsDefinition";
 import { Spinner } from "./Spinner";
 
-export function loadableStateComponent<Type extends VertexType>(
-  loadableState$: Observable<VertexLoadableState<Type>>,
-  Component: React.FC<VertexLoadedState<Type>>
-): React.FC<{ dispatch: (action: AnyAction) => void }> {
+export function loadableStateComponent<Fields extends VertexFieldsDefinition>(
+  loadableState$: Observable<VertexLoadableState<Fields>>,
+  Component: React.FC<VertexLoadedState<Fields>>
+): React.FC<{ dispatch: (action: UnknownAction) => void }> {
   const componentState$ = componentState(loadableState$, null);
   return ({ dispatch }) => {
     const loadableState = useStateObservable(componentState$);
@@ -22,6 +22,6 @@ export function loadableStateComponent<Type extends VertexType>(
           {JSON.stringify(loadableState.errors.map((error) => error.message))}
         </h3>
       );
-    return <Component {...(loadableState.state as any)} dispatch={dispatch} />;
+    return <Component {...loadableState.state} dispatch={dispatch} />;
   };
 }

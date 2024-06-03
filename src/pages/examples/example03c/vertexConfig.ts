@@ -37,13 +37,16 @@ export const example03c_VertexConfig = rootVertexConfig
       map((match) => match.params["pokemon-name"] as PokemonName)
     ),
   }))
-  .sideEffect(example03c_Actions.selectPokemon, (pokemon, vertex) => {
-    if (pokemon) {
-      vertex.dependencies.router.examples[3].c.push({
-        "pokemon-name": pokemon.label,
-      });
+  .sideEffect(
+    example03c_Actions.selectPokemon,
+    ({ payload: pokemon, dependencies }) => {
+      if (pokemon) {
+        dependencies.router.examples[3].c.push({
+          "pokemon-name": pokemon.label,
+        });
+      }
     }
-  })
+  )
   .computeFromFields(["pokemonOptions", "selectedPokemonName"], {
     selectedPokemonOption: ({ pokemonOptions, selectedPokemonName }) =>
       asSequence(pokemonOptions || []).find(

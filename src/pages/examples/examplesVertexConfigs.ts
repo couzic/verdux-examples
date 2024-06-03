@@ -5,6 +5,7 @@ import { example02b_VertexConfig } from "./example02b/vertexConfig";
 import { example03a_VertexConfig } from "./example03a/vertexConfig";
 import { example03b_VertexConfig } from "./example03b/vertexConfig";
 import { example03c_VertexConfig } from "./example03c/vertexConfig";
+import { realLifeVertexConfigs } from "./real-life/realLifeVertexConfigs";
 
 export const examplesVertexConfigs = [
   example01a_VertexConfig,
@@ -14,4 +15,5 @@ export const examplesVertexConfigs = [
   example03a_VertexConfig,
   example03b_VertexConfig,
   example03c_VertexConfig,
+  ...realLifeVertexConfigs,
 ];
