@@ -123,6 +123,6 @@ const Description = () => (
         </button>
       </span>
     </p>
-    <ExampleLink filename="Example02b.tsx" />
+    <ExampleLink filename="example02b/vertexConfig.ts" />
   </ExampleDescription>
 );

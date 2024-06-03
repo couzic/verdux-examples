@@ -56,6 +56,6 @@ const Description = () => (
       changes of this field's value as a stream, debouncing and mapping to a
       stream of API results.
     </p>
-    <ExampleLink filename="Example01b.tsx" />
+    <ExampleLink filename="example01b/vertexConfig.ts" />
   </ExampleDescription>
 );

@@ -27,6 +27,6 @@ const Description = () => (
       "pikachu" and store that data in the "pokemon" field.
     </p>
     <p>While pokemon data is being loaded, a spinner is displayed.</p>
-    <ExampleLink filename="Example01a.tsx" />
+    <ExampleLink filename="example01a/vertexConfig.ts" />
   </ExampleDescription>
 );

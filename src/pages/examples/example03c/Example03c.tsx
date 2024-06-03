@@ -57,6 +57,6 @@ const Description = () => (
       pokemon name as an URL param.
     </p>
     <p>Have fun playing with the browser Back and Forward buttons !</p>
-    <ExampleLink filename="Example03c.tsx" />
+    <ExampleLink filename="example03c/vertexConfig.ts" />
   </ExampleDescription>
 );

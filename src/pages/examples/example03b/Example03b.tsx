@@ -55,6 +55,6 @@ const Description = () => (
       Much like the previous example, the only difference is that the select
       options are loaded from the API.
     </p>
-    <ExampleLink filename="Example03b.tsx" />
+    <ExampleLink filename="example03b/vertexConfig.ts" />
   </ExampleDescription>
 );

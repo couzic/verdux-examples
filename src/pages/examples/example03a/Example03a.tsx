@@ -138,6 +138,6 @@ const Description = () => (
       We start from a select with a static list of options. Once an option is
       selected, the data for the selected pokemon is loaded.
     </p>
-    <ExampleLink filename="Example03a.tsx" />
+    <ExampleLink filename="example03a/vertexConfig.ts" />
   </ExampleDescription>
 );
