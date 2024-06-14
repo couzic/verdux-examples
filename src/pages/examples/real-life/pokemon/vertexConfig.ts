@@ -25,54 +25,53 @@ export const pokemonVertexConfig = realLifeExampleVertexConfig
   .configureDownstreamVertex({
     slice,
   })
-  .load(({ router }) => ({
-    pokemonDescriptionMatch:
-      router.examples.realLife.pokemon.selected.description.match$.pipe(
-        map(Boolean)
-      ),
-    pokemonEvolutionsMatch:
-      router.examples.realLife.pokemon.selected.evolutions.match$.pipe(
-        map(Boolean)
-      ),
-  }))
-  .load(({ pokemonService, router }) => ({
-    pokemonOptions: router.examples.realLife.pokemon.match$.pipe(
-      filter(Boolean),
-      first(),
-      mergeMap(() => pokemonService.listAll()),
-      map((list) =>
-        list.map((_): PokemonOption => ({ label: _.name, value: _.url }))
-      )
-    ),
-    selectedPokemonName: router.examples.realLife.pokemon.selected.match$.pipe(
-      // filter(Boolean),
-      map((match) =>
-        match ? (match.params["pokemon-name"] as PokemonName) : null
-      ),
-      distinctUntilChanged()
-    ),
-  }))
-  .computeFromFields(["pokemonOptions", "selectedPokemonName"], {
-    selectedPokemonOption: ({ pokemonOptions, selectedPokemonName }) =>
-      asSequence(pokemonOptions || []).find(
-        (_) => _.label === selectedPokemonName
-      ),
-  })
-  .sideEffect(
-    pokemonActions.selectPokemon,
-    ({ payload: pokemon, dependencies }) => {
-      if (pokemon) {
-        dependencies.router.examples.realLife.pokemon.selected.description.push(
-          {
+  .withDependencies(({ router, pokemonService }, config) =>
+    config
+      .load({
+        pokemonDescriptionMatch:
+          router.examples.realLife.pokemon.selected.description.match$.pipe(
+            map(Boolean)
+          ),
+        pokemonEvolutionsMatch:
+          router.examples.realLife.pokemon.selected.evolutions.match$.pipe(
+            map(Boolean)
+          ),
+      })
+      .load({
+        pokemonOptions: router.examples.realLife.pokemon.match$.pipe(
+          filter(Boolean),
+          first(),
+          mergeMap(() => pokemonService.listAll()),
+          map((list) =>
+            list.map((_): PokemonOption => ({ label: _.name, value: _.url }))
+          )
+        ),
+        selectedPokemonName:
+          router.examples.realLife.pokemon.selected.match$.pipe(
+            // filter(Boolean),
+            map((match) =>
+              match ? (match.params["pokemon-name"] as PokemonName) : null
+            ),
+            distinctUntilChanged()
+          ),
+      })
+      .computeFromFields(["pokemonOptions", "selectedPokemonName"], {
+        selectedPokemonOption: ({ pokemonOptions, selectedPokemonName }) =>
+          asSequence(pokemonOptions || []).find(
+            (_) => _.label === selectedPokemonName
+          ),
+      })
+      .sideEffect(pokemonActions.selectPokemon, ({ payload: pokemon }) => {
+        if (pokemon) {
+          router.examples.realLife.pokemon.selected.description.push({
             "pokemon-name": pokemon.label,
-          }
-        );
-      }
-    }
-  )
-  .loadFromFields(["selectedPokemonName"], ({ pokemonService }) => ({
-    selectedPokemon: ({ selectedPokemonName }) =>
-      selectedPokemonName
-        ? pokemonService.loadByName(selectedPokemonName)
-        : of(null),
-  }));
+          });
+        }
+      })
+      .loadFromFields(["selectedPokemonName"], {
+        selectedPokemon: ({ selectedPokemonName }) =>
+          selectedPokemonName
+            ? pokemonService.loadByName(selectedPokemonName)
+            : of(null),
+      })
+  );

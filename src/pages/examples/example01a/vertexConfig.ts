@@ -6,10 +6,12 @@ export const example01a_VertexConfig = rootVertexConfig
   .configureDownstreamVertex({
     slice: createSlice({ name: "example01a", initialState: {}, reducers: {} }),
   })
-  .load(({ router, pokemonService }) => ({
-    pokemon: router.examples[1].a.match$.pipe(
-      filter(Boolean), // Positive matches only => route is entered
-      first(),
-      mergeMap(() => pokemonService.findByName("pikachu"))
-    ),
-  }));
+  .withDependencies(({ router, pokemonService }, config) =>
+    config.load({
+      pokemon: router.examples[1].a.match$.pipe(
+        filter(Boolean), // Positive matches only => route is entered
+        first(),
+        mergeMap(() => pokemonService.findByName("pikachu"))
+      ),
+    })
+  );

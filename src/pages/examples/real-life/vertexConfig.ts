@@ -12,7 +12,11 @@ export const realLifeExampleVertexConfig = rootVertexConfig
   .configureDownstreamVertex({
     slice,
   })
-  .load(({ router }) => ({
-    pokemonTabMatch: router.examples.realLife.pokemon.match$.pipe(map(Boolean)),
-    aboutTabMatch: router.examples.realLife.about.match$.pipe(map(Boolean)),
-  }));
+  .withDependencies(({ router }, config) =>
+    config.load({
+      pokemonTabMatch: router.examples.realLife.pokemon.match$.pipe(
+        map(Boolean)
+      ),
+      aboutTabMatch: router.examples.realLife.about.match$.pipe(map(Boolean)),
+    })
+  );

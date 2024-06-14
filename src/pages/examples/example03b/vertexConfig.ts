@@ -21,19 +21,22 @@ export const example03b_Actions = slice.actions;
 
 export const example03b_VertexConfig = rootVertexConfig
   .configureDownstreamVertex({ slice })
-  .load(({ pokemonService, router }) => ({
-    pokemonOptions: router.examples[3].b.match$.pipe(
-      filter(Boolean),
-      first(),
-      mergeMap(() => pokemonService.listAll()),
-      map((list) =>
-        list.map((_): PokemonOption => ({ label: _.name, value: _.url }))
-      )
-    ),
-  }))
-  .loadFromFields(["selectedOption"], ({ pokemonService }) => ({
-    pokemon: ({ selectedOption }) =>
-      !selectedOption
-        ? of(null)
-        : pokemonService.loadByName(selectedOption.label),
-  }));
+  .withDependencies(({ router, pokemonService }, config) =>
+    config
+      .load({
+        pokemonOptions: router.examples[3].b.match$.pipe(
+          filter(Boolean),
+          first(),
+          mergeMap(() => pokemonService.listAll()),
+          map((list) =>
+            list.map((_): PokemonOption => ({ label: _.name, value: _.url }))
+          )
+        ),
+      })
+      .loadFromFields(["selectedOption"], {
+        pokemon: ({ selectedOption }) =>
+          !selectedOption
+            ? of(null)
+            : pokemonService.loadByName(selectedOption.label),
+      })
+  );
