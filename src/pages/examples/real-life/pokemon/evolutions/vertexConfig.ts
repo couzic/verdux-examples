@@ -14,8 +14,8 @@ export const pokemonEvolutionsVertexConfig = pokemonVertexConfig
     slice,
     upstreamFields: ["selectedPokemon"],
   })
-  .withDependencies(({ pokemonService, router }, config) =>
-    config
+  .withDependencies(({ pokemonService, router }, vertex) =>
+    vertex
       .load({
         evolutionsPokemonNameParam:
           router.examples.realLife.pokemon.selected.evolutions.match$.pipe(

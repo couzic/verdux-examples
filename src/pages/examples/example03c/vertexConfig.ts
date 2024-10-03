@@ -5,13 +5,9 @@ import { rootVertexConfig } from "../../../rootVertexConfig";
 import { PokemonName } from "../pokemon/Pokemon";
 import { PokemonOption } from "./PokemonOption";
 
-const initialState = { selectedOption: null } as {
-  selectedOption: PokemonOption | null;
-};
-
 const slice = createSlice({
   name: "example03c",
-  initialState,
+  initialState: { selectedOption: null as PokemonOption | null },
   reducers: {
     selectPokemon: (state, action: PayloadAction<PokemonOption | null>) => {
       state.selectedOption = action.payload;
@@ -23,8 +19,8 @@ export const example03c_Actions = slice.actions;
 
 export const example03c_VertexConfig = rootVertexConfig
   .configureDownstreamVertex({ slice })
-  .withDependencies(({ router, pokemonService }, config) =>
-    config
+  .withDependencies(({ router, pokemonService }, vertex) =>
+    vertex
       .load({
         pokemonOptions: router.examples[3].c.match$.pipe(
           filter(Boolean),
@@ -39,7 +35,7 @@ export const example03c_VertexConfig = rootVertexConfig
           map((match) => match.params["pokemon-name"] as PokemonName)
         ),
       })
-      .sideEffect(example03c_Actions.selectPokemon, ({ payload: pokemon }) => {
+      .sideEffect(slice.actions.selectPokemon, ({ payload: pokemon }) => {
         if (pokemon) {
           router.examples[3].c.push({
             "pokemon-name": pokemon.label,

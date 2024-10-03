@@ -12,8 +12,8 @@ export const realLifeExampleVertexConfig = rootVertexConfig
   .configureDownstreamVertex({
     slice,
   })
-  .withDependencies(({ router }, config) =>
-    config.load({
+  .withDependencies(({ router }, vertex) =>
+    vertex.load({
       pokemonTabMatch: router.examples.realLife.pokemon.match$.pipe(
         map(Boolean)
       ),

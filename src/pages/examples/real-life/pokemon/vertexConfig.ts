@@ -24,9 +24,10 @@ export const pokemonActions = slice.actions;
 export const pokemonVertexConfig = realLifeExampleVertexConfig
   .configureDownstreamVertex({
     slice,
+    upstreamFields: ["pokemonTabMatch"],
   })
-  .withDependencies(({ router, pokemonService }, config) =>
-    config
+  .withDependencies(({ router, pokemonService }, vertex) =>
+    vertex
       .load({
         pokemonDescriptionMatch:
           router.examples.realLife.pokemon.selected.description.match$.pipe(
@@ -73,5 +74,8 @@ export const pokemonVertexConfig = realLifeExampleVertexConfig
           selectedPokemonName
             ? pokemonService.loadByName(selectedPokemonName)
             : of(null),
+      })
+      .computeFromFields(["selectedPokemon"], {
+        selectedPokemonImage: ({ selectedPokemon }) => selectedPokemon?.imgUrl,
       })
   );

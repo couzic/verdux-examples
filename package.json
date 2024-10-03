@@ -22,7 +22,7 @@
     "react-select": "^5.7.4",
     "rxjs": "^7.8.1",
     "sequency": "^0.20.0",
-    "verdux": "^0.5.0"
+    "verdux": "^0.6.5"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.246",

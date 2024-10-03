@@ -6,8 +6,8 @@ export const example02b_VertexConfig = rootVertexConfig
   .configureDownstreamVertex({
     slice: createSlice({ name: "example02b", initialState: {}, reducers: {} }),
   })
-  .withDependencies(({ router, pokemonService }, config) =>
-    config
+  .withDependencies(({ router, pokemonService }, vertex) =>
+    vertex
       .load({
         pokemonName: router.examples[2].b.match$.pipe(
           filter(Boolean),

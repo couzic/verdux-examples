@@ -16,8 +16,8 @@ export const example01b_actions = slice.actions;
 
 export const example01b_VertexConfig = rootVertexConfig
   .configureDownstreamVertex({ slice })
-  .withDependencies(({ pokemonService }, config) =>
-    config.loadFromFields$(["searchedPokemonName"], {
+  .withDependencies(({ pokemonService }, vertex) =>
+    vertex.loadFromFields$(["searchedPokemonName"], {
       pokemon: pipe(
         map((_) => _.searchedPokemonName),
         map((_) => _.trim().toLowerCase()),
