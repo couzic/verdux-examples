@@ -1,12 +1,15 @@
+import { Suspense } from "react";
 import Select from "react-select";
 import { Route } from "../../../common/Route";
-import { loadableComponent } from "../../../common/loadableComponent";
+import { useDispatch } from "../../../common/useDispatch";
+import { useVertexState } from "../../../common/useVertexState";
 import { router } from "../../../router/createRouter";
 import { ExampleDescription } from "../ExampleDescription";
 import { ExampleLink } from "../ExampleLink";
 import { PokemonDisplay } from "../pokemon/PokemonDisplay";
 import { PokemonOption } from "./PokemonOption";
 import { example03a_Actions, example03a_VertexConfig } from "./vertexConfig";
+import { Spinner } from "../../../common/Spinner";
 
 const route = router.examples["3"].a;
 
@@ -93,32 +96,6 @@ const pokemonOptions: PokemonOption[] = [
   },
 ] as any;
 
-const PokemonSelect = loadableComponent({
-  vertexConfig: example03a_VertexConfig,
-  fields: ["selectedOption"],
-  component: ({ selectedOption, dispatch }) => {
-    const onPokemonSelected = (option: PokemonOption | null) =>
-      dispatch(example03a_Actions.selectPokemon(option));
-    return (
-      <div style={{ width: 300, color: "#333" }}>
-        <Select
-          placeholder="Select a pokemon"
-          options={pokemonOptions}
-          value={selectedOption}
-          onChange={onPokemonSelected}
-        />
-      </div>
-    );
-  },
-});
-
-const Pokemon = loadableComponent({
-  vertexConfig: example03a_VertexConfig,
-  fields: ["pokemon"],
-  component: ({ pokemon }) =>
-    !pokemon ? null : <PokemonDisplay pokemon={pokemon} />,
-});
-
 export const Example03a = () => (
   <Route match={route}>
     <h2>Example 3a</h2>
@@ -126,8 +103,12 @@ export const Example03a = () => (
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
       <Description />
-      <PokemonSelect />
-      <Pokemon />
+      <Suspense fallback={<Spinner />}>
+        <PokemonSelect />
+      </Suspense>
+      <Suspense fallback={<Spinner />}>
+        <Pokemon />
+      </Suspense>
     </div>
   </Route>
 );
@@ -141,3 +122,32 @@ const Description = () => (
     <ExampleLink filename="example03a/vertexConfig.ts" />
   </ExampleDescription>
 );
+
+const PokemonSelect = () => {
+  const dispatch = useDispatch();
+  const { selectedOption } = useVertexState({
+    vertex: example03a_VertexConfig,
+    fields: ["selectedOption"],
+  });
+  const onPokemonSelected = (option: PokemonOption | null) =>
+    dispatch(example03a_Actions.selectPokemon(option));
+  return (
+    <div style={{ width: 300, color: "#333" }}>
+      <Select
+        placeholder="Select a pokemon"
+        options={pokemonOptions}
+        value={selectedOption}
+        onChange={onPokemonSelected}
+      />
+    </div>
+  );
+};
+
+const Pokemon = () => {
+  const { pokemon } = useVertexState({
+    vertex: example03a_VertexConfig,
+    fields: ["pokemon"],
+  });
+  if (!pokemon) return null;
+  return <PokemonDisplay pokemon={pokemon} />;
+};

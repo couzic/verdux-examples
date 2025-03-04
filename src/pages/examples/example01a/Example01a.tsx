@@ -1,22 +1,20 @@
+import { Suspense } from "react";
 import { Route } from "../../../common/Route";
-import { loadableComponent } from "../../../common/loadableComponent";
+import { useVertexState } from "../../../common/useVertexState";
 import { router } from "../../../router/createRouter";
 import { ExampleDescription } from "../ExampleDescription";
 import { ExampleLink } from "../ExampleLink";
 import { PokemonDisplay } from "../pokemon/PokemonDisplay";
 import { example01a_VertexConfig } from "./vertexConfig";
-
-const Pokemon = loadableComponent({
-  vertexConfig: example01a_VertexConfig,
-  fields: ["pokemon"],
-  component: ({ pokemon }) => <PokemonDisplay pokemon={pokemon!} />,
-});
+import { Spinner } from "../../../common/Spinner";
 
 export const Example01a = () => (
   <Route match={router.examples[1].a}>
     <h2>Example 1a</h2>
     <Description />
-    <Pokemon />
+    <Suspense fallback={<Spinner />}>
+      <Pokemon />
+    </Suspense>
   </Route>
 );
 
@@ -30,3 +28,11 @@ const Description = () => (
     <ExampleLink filename="example01a/vertexConfig.ts" />
   </ExampleDescription>
 );
+
+const Pokemon = () => {
+  const { pokemon } = useVertexState({
+    vertex: example01a_VertexConfig,
+    fields: ["pokemon"],
+  });
+  return <PokemonDisplay pokemon={pokemon!} />;
+};

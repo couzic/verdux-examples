@@ -1,18 +1,15 @@
-import { state, useStateObservable } from "@react-rxjs/core";
-import React from "react";
+import { useObservableEagerState } from "observable-hooks";
+import { FC, PropsWithChildren } from "react";
 import { Observable } from "rxjs";
 
-export const Route: React.FC<{
-  match: { match$: Observable<null | { exact: boolean }> };
-  exact?: boolean;
-  children: any;
-}> = ({ match, exact, children }) => {
-  const state$ = state(match.match$, null);
-  const Component = () => {
-    const matching = useStateObservable(state$);
-    if (matching === null) return null;
-    if (exact && !matching.exact) return null;
-    return <>{children}</>;
-  };
-  return <Component />;
+export const Route: FC<
+  PropsWithChildren<{
+    match: { match$: Observable<null | { exact: boolean }> };
+    exact?: boolean;
+  }>
+> = ({ match: route, exact, children }) => {
+  const match = useObservableEagerState(route.match$);
+  if (!match) return null;
+  if (exact && !match.exact) return null;
+  return <>{children}</>;
 };

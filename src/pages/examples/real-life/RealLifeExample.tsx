@@ -1,5 +1,5 @@
 import { Route } from "../../../common/Route";
-import { loadableComponent } from "../../../common/loadableComponent";
+import { useVertexState } from "../../../common/useVertexState";
 import { router } from "../../../router/createRouter";
 import { Tab, Tabs } from "./Tabs";
 import { AboutPage } from "./about/AboutPage";
@@ -11,10 +11,12 @@ const route = router.examples.realLife;
 const goToPokemonPage = () => route.pokemon.push();
 const goToAboutPage = () => route.about.push();
 
-export const RealLifeExample = loadableComponent({
-  vertexConfig: realLifeExampleVertexConfig,
-  fields: ["pokemonTabMatch", "aboutTabMatch"],
-  component: ({ pokemonTabMatch, aboutTabMatch }) => (
+export const RealLifeExample = () => {
+  const { pokemonTabMatch, aboutTabMatch } = useVertexState({
+    vertex: realLifeExampleVertexConfig,
+    fields: ["pokemonTabMatch", "aboutTabMatch"],
+  });
+  return (
     <Route match={route}>
       <div style={{ height: "80vh" }}>
         <h2>Real World (sort of) Example</h2>
@@ -32,5 +34,5 @@ export const RealLifeExample = loadableComponent({
         <AboutPage />
       </div>
     </Route>
-  ),
-});
+  );
+};

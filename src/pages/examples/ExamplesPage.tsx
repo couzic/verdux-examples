@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { Route } from "../../common/Route";
+import { Spinner } from "../../common/Spinner";
 import { router } from "../../router/createRouter";
 import { Example01a } from "./example01a/Example01a";
 import { Example01b } from "./example01b/Example01b";
@@ -14,13 +16,15 @@ const goHome = () => router.home.push();
 export const ExamplesPage = () => (
   <Route match={router.examples}>
     <button onClick={goHome}>Home</button>
-    <Example01a />
-    <Example01b />
-    <Example02a />
-    <Example02b />
-    <Example03a />
-    <Example03b />
-    <Example03c />
-    <RealLifeExample />
+    <Suspense fallback={<Spinner />}>
+      <Example01a />
+      <Example01b />
+      <Example02a />
+      <Example02b />
+      <Example03a />
+      <Example03b />
+      <Example03c />
+      <RealLifeExample />
+    </Suspense>
   </Route>
 );

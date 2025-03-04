@@ -1,27 +1,17 @@
-import { useContext } from "react";
+import { Suspense, useContext } from "react";
 import { GraphContext } from "../../../common/GraphContext";
 import { Route } from "../../../common/Route";
-import { loadableComponent } from "../../../common/loadableComponent";
+import { useVertexState } from "../../../common/useVertexState";
 import { router } from "../../../router/createRouter";
 import { ExampleDescription } from "../ExampleDescription";
 import { ExampleLink } from "../ExampleLink";
 import { PokemonDisplay } from "../pokemon/PokemonDisplay";
 import { example01b_VertexConfig, example01b_actions } from "./vertexConfig";
+import { Spinner } from "../../../common/Spinner";
 
 const route = router.examples["1"].b;
 
 const { inputValueChanged } = example01b_actions;
-
-export const Pokemon = loadableComponent({
-  vertexConfig: example01b_VertexConfig,
-  fields: ["pokemon"],
-  component: ({ pokemon }) =>
-    pokemon == "empty input" ? null : pokemon === null ? (
-      <h4>Pokemon not found</h4>
-    ) : (
-      <PokemonDisplay pokemon={pokemon} />
-    ),
-});
 
 export const Example01b = () => {
   const graph = useContext(GraphContext);
@@ -44,7 +34,9 @@ export const Example01b = () => {
         }}
         placeholder="Enter pokemon name"
       />
-      <Pokemon />
+      <Suspense fallback={<Spinner />}>
+        <Pokemon />
+      </Suspense>
     </Route>
   );
 };
@@ -59,3 +51,13 @@ const Description = () => (
     <ExampleLink filename="example01b/vertexConfig.ts" />
   </ExampleDescription>
 );
+
+export const Pokemon = () => {
+  const { pokemon } = useVertexState({
+    vertex: example01b_VertexConfig,
+    fields: ["pokemon"],
+  });
+  if (pokemon === "empty input") return null;
+  if (pokemon === null) return <h4>Pokemon not found</h4>;
+  return <PokemonDisplay pokemon={pokemon!} />;
+};

@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { Route } from "../../../common/Route";
-import { loadableComponent } from "../../../common/loadableComponent";
+import { Spinner } from "../../../common/Spinner";
+import { useVertexState } from "../../../common/useVertexState";
 import { router } from "../../../router/createRouter";
 import {
   ExampleDescription,
@@ -11,59 +13,17 @@ import { example02b_VertexConfig } from "./vertexConfig";
 
 const route = router.examples["2"].b;
 
-const EvolvesFrom = loadableComponent({
-  vertexConfig: example02b_VertexConfig,
-  fields: ["evolvesFrom"],
-  component: ({ evolvesFrom }) =>
-    !evolvesFrom ? null : <PokemonDisplay pokemon={evolvesFrom} />,
-});
-
-const EvolvesTo = loadableComponent({
-  vertexConfig: example02b_VertexConfig,
-  fields: ["evolvesTo"],
-  component: ({ evolvesTo }) => (
-    <>
-      {evolvesTo.map((evo) => (
-        <PokemonDisplay pokemon={evo} key={evo.id} />
-      ))}
-    </>
-  ),
-});
-
-const PokemonAsap = loadableComponent({
-  vertexConfig: example02b_VertexConfig,
-  fields: ["pokemon"],
-  component: ({ pokemon }) =>
-    !pokemon ? null : (
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <EvolvesFrom />
-        <PokemonDisplay pokemon={pokemon} />
-        <EvolvesTo />
-      </div>
-    ),
-});
-
-const PokemonFullyLoaded = loadableComponent({
-  vertexConfig: example02b_VertexConfig,
-  fields: ["pokemon", "evolvesFrom", "evolvesTo"],
-  component: ({ evolvesFrom, pokemon, evolvesTo }) => (
-    <div style={{ display: "flex", justifyContent: "center" }}>
-      {!evolvesFrom ? null : <PokemonDisplay pokemon={evolvesFrom} />}
-      {!pokemon ? null : <PokemonDisplay pokemon={pokemon} />}
-      {evolvesTo.map((evo) => (
-        <PokemonDisplay pokemon={evo} key={evo.id} />
-      ))}
-    </div>
-  ),
-});
-
 export const Example02b = () => (
   <Route match={route}>
     <h2>Example 2b</h2>
     <Description />
-    <PokemonAsap />
+    <Suspense fallback={<Spinner />}>
+      <PokemonAsap />
+    </Suspense>
     <h1>OR</h1>
-    <PokemonFullyLoaded />
+    <Suspense fallback={<Spinner />}>
+      <PokemonFullyLoaded />
+    </Suspense>
   </Route>
 );
 
@@ -126,3 +86,60 @@ const Description = () => (
     <ExampleLink filename="example02b/vertexConfig.ts" />
   </ExampleDescription>
 );
+
+const PokemonAsap = () => {
+  const { pokemon } = useVertexState({
+    vertex: example02b_VertexConfig,
+    fields: ["pokemon"],
+  });
+  if (!pokemon) return null;
+  return (
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <Suspense fallback={<Spinner />}>
+        <EvolvesFrom />
+      </Suspense>
+      <PokemonDisplay pokemon={pokemon} />
+      <Suspense fallback={<Spinner />}>
+        <EvolvesTo />
+      </Suspense>
+    </div>
+  );
+};
+
+const PokemonFullyLoaded = () => {
+  const { pokemon } = useVertexState({
+    vertex: example02b_VertexConfig,
+    fields: ["pokemon"],
+  });
+  if (!pokemon) return null;
+  return (
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <EvolvesFrom />
+      <PokemonDisplay pokemon={pokemon} />
+      <EvolvesTo />
+    </div>
+  );
+};
+
+const EvolvesFrom = () => {
+  const { evolvesFrom } = useVertexState({
+    vertex: example02b_VertexConfig,
+    fields: ["evolvesFrom"],
+  });
+  if (!evolvesFrom) return null;
+  return <PokemonDisplay pokemon={evolvesFrom} />;
+};
+
+const EvolvesTo = () => {
+  const { evolvesTo } = useVertexState({
+    vertex: example02b_VertexConfig,
+    fields: ["evolvesTo"],
+  });
+  return (
+    <>
+      {evolvesTo.map((evo) => (
+        <PokemonDisplay pokemon={evo} key={evo.id} />
+      ))}
+    </>
+  );
+};
